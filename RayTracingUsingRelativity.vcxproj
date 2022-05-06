@@ -141,6 +141,11 @@
   <ItemGroup>
     <ClCompile Include="RayTracingUsingRelativity.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="color.h" />
+    <ClInclude Include="Header.h" />
+    <ClInclude Include="ray.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
