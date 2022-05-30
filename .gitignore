@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+boost/
+.vs/
+*.db

@@ -12,12 +12,6 @@ public:
 	virtual bool hit(
 		const ray& r, double t_min, double t_max, hit_record& rec) const override;
 
-public:
-	point3 center;
-	double radius;
-    shared_ptr<material> mat_ptr;
-     
-private:
     static void get_sphere_uv(const point3& p, double& u, double& v) {
         // p: a given point on the sphere of radius one, centered at the origin.
         // u: returned value [0,1] of angle around the Y axis from X=-1.
@@ -29,6 +23,14 @@ private:
         u = phi / (2 * pi);
         v = theta / pi;
     }
+
+public:
+	point3 center;
+	double radius;
+    shared_ptr<material> mat_ptr;
+     
+
+
 };
 
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
@@ -36,7 +38,6 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
     auto a = r.direction().length_squared();
     auto half_b = dot(oc, r.direction());
     auto c = oc.length_squared() - radius * radius;
-
     auto discriminant = half_b * half_b - a * c;
     if (discriminant < 0) {
         return false;
