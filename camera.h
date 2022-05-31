@@ -31,7 +31,7 @@ class camera {
 		}
 
 		ray get_ray(double s, double t) const {
-			return ray(origin, lower_left_corner + s * horizontal + t * vertical - origin);
+			return ray(origin, unit_vector(lower_left_corner + s * horizontal + t * vertical - origin));
 		}
 
 	private:

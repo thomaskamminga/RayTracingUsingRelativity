@@ -1,7 +1,7 @@
 ﻿  RayTracingUsingRelativity.cpp
   Generating code
-  5 of 792 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
+  8 of 817 functions ( 1.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    12 functions had inline decision re-evaluated but remain unchanged
+    24 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   RayTracingUsingRelativity.vcxproj -> C:\Users\thoma\Documents\GitHub\RayTracingUsingRelativity\Release\RayTracingUsingRelativity.exe

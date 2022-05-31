@@ -11,21 +11,19 @@
 #include <boost/numeric/odeint.hpp>
 #include <iostream>
 
+void next_ray_on_geodesic(ray& r, const double d_lambda, double& lambda, state_type& x, runge_kutta4< state_type > rk4) {
+    update_ray(x, r);
+    lambda += d_lambda;
 
+    rk4.do_step(geodesicODE, x, lambda, d_lambda);
+    update_ray(r, x);
 
-
-
-ray next_ray_on_geodesic(const ray& r, const double step_size) {
-    ray next_ray;
-
-    next_ray.orig = r.orig + step_size * r.dir;
-    next_ray.dir = r.dir;
-    return next_ray;
 }
 
-color ray_color(const ray& r, const hittable_list& world, const double step_size, const double background_radius, int bounce_depth, int step_depth) {
-    hit_record rec;
+color ray_color( ray& r, const hittable_list& world, const double d_lambda, const double background_radius, int bounce_depth, int step_depth, state_type& x, double lambda, runge_kutta4< state_type > rk4) {
 
+    hit_record rec;
+    
     //if we've exceeded the ray bounce limit, no more light is gathered.
     if (bounce_depth <= 0) {
         return color(0, 0, 0);
@@ -37,19 +35,19 @@ color ray_color(const ray& r, const hittable_list& world, const double step_size
     }
 
     //ray hits object
-    if (world.hit(r, 0.001, step_size, rec)) {
+    if (world.hit(r, 0.001, d_lambda, rec)) {
         ray scattered;
         color attenuation;
 
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-            return 5 * attenuation * ray_color(scattered, world, step_size, background_radius, bounce_depth - 1, step_depth);
+            return 5 * attenuation * ray_color(scattered, world, d_lambda, background_radius, bounce_depth - 1, step_depth, x, lambda, rk4);
         }
         return color(0, 0, 0);
     }
 
     
     //ray does not hit object and is out of bound
-    if ((r.at(step_size) - world.camera_position).length() > background_radius) {
+    if ((r.at(d_lambda) - world.camera_position).length() > background_radius) {
         if (world.background_exits) {
             if (world.background_object->hit(ray(point3(0, 0, 0), r.dir), 0.001, infinity, rec)) {
                 ray scattered;
@@ -67,11 +65,10 @@ color ray_color(const ray& r, const hittable_list& world, const double step_size
     }
 
     //ray does not hit object and is in bounds
-    ray next_ray = next_ray_on_geodesic(r, step_size);
-    return ray_color(next_ray, world, step_size, background_radius, bounce_depth, step_depth-1);
-
-
+    next_ray_on_geodesic(r, d_lambda, lambda,  x, rk4);
+    return ray_color(r, world, d_lambda, background_radius, bounce_depth, step_depth-1, x, lambda, rk4);
 }
+
 
 hittable_list random_scene(const point3 lookfrom) {
     hittable_list world(lookfrom);
@@ -132,17 +129,20 @@ int main()
     // Image
 
     const auto aspect_ratio = 16.0 / 9.0;
-    const int image_width = 1920;
+    const int image_width = 720;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 200;
+    const int samples_per_pixel = 50;
     const int max_bounce_depth = 10;
 
     // Geodesic
 
     const auto background_radius = 10.0;
-    const auto max_geodesic_length = 70.0;
-    const int geodesic_depth = 10;
-    const auto geodesic_step_size = static_cast<double>(max_geodesic_length / geodesic_depth);
+    const auto max_geodesic_length = 50.0;
+    const int geodesic_depth = 50;
+    const auto d_lambda = static_cast<double>(max_geodesic_length / geodesic_depth);
+    double lambda = 0.0;
+    state_type x(8);
+    runge_kutta4< state_type > rk4;
 
     // Camera
 
@@ -159,22 +159,6 @@ int main()
     auto world = earth(lookfrom);
 
 
-    // OdeInt
-    
-    //state_type x(3);
-    //x[0] = x[1] = x[2] = 10.0;
-    //const double dt = 0.01;
-    //runge_kutta4< state_type > rk4;
-    //double t = 0.0;
-    //for (size_t i = 0; i < 1000; ++i, t += dt)
-    //{
-    //    rk4.do_step(lorenz, x, t, dt);
-    //    std::cerr << x[0] << ' ' << x[1] << ' ' << x[3] << ' ' << '\n';
-    //    std::cin.ignore();
-    //}
-    //
-
-
     // Render
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
@@ -187,7 +171,8 @@ int main()
                 auto u = (i + random_double()) / (image_width - 1);
                 auto v = (j + random_double()) / (image_height - 1);
                 ray r = cam.get_ray(u,v);
-                pixel_color += ray_color(r, world, geodesic_step_size, background_radius, max_bounce_depth, geodesic_depth);
+                update_ray(x, r);
+                pixel_color += ray_color(r, world, d_lambda, background_radius, max_bounce_depth, geodesic_depth, x, lambda, rk4);
             }
             write_color(std::cout, pixel_color, samples_per_pixel);
         }

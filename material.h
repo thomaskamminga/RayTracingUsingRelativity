@@ -29,7 +29,7 @@ public:
 		if (scatter_direction.near_zero())
 			scatter_direction = rec.normal;
 		
-		scattered = ray(rec.p, scatter_direction);
+		scattered = ray(rec.p, unit_vector(scatter_direction));
 		attenuation = albedo->value(rec.u, rec.v, rec.p);
 		return true;
 	}
