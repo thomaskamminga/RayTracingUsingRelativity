@@ -9,5 +9,5 @@ To run build to relase and run "RayTracingUsingRelativity.exe" in RayTracingUsin
 
 # Resulting images
 ![Schwarzschild black hole with milkyway background](https://github.com/thomaskamminga/RayTracingUsingRelativity/blob/main/Release/images/front_page.png)
-![Schwarzschild black hole with accretion disk](https://github.com/thomaskamminga/RayTracingUsingRelativity)
+![Schwarzschild black hole with accretion disk](https://github.com/thomaskamminga/RayTracingUsingRelativity/blob/main/Release/images/schwarzschild_correct%20ring_v2.png)
 ![Kerr black hole with accretion disk](https://github.com/thomaskamminga/RayTracingUsingRelativity/blob/main/Release/images/Kerr_correct_ring.png)
