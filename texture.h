@@ -52,7 +52,7 @@ public:
 
 class image_texture : public texture {
 public:
-	const static int bytes_per_pixel = 3;
+	const static int bytes_per_pixel = 4;
 
 	image_texture()
 		: data(nullptr), width(0), height(0), bytes_per_scanline(0) {}
@@ -99,7 +99,7 @@ public:
 		const auto color_scale = 1.0 / 255.0;
 		auto pixel = data + j * bytes_per_scanline + i * bytes_per_pixel;
 
-		return color(color_scale * pixel[0], color_scale * pixel[1], color_scale * pixel[2]);
+		return color(color_scale * pixel[0], color_scale * pixel[1], color_scale * pixel[2], color_scale * pixel[3]);
 	}
 
 private:

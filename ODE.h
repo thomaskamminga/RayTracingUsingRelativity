@@ -1,4 +1,7 @@
+#include "mass_object.h"
+#include "rtweekend.h"
 #include <boost/numeric/odeint.hpp>
+#include <cmath>
 
 #ifndef ODE_H
 #define ODE_H
@@ -7,34 +10,50 @@ using namespace boost::numeric::odeint;
 
 typedef std::vector< double > state_type;
 
+class step {
+public:
+    double adjusted_step_size(double r) {
+        if (use_adjusted_step_size) {
+            double temp = clamp(((r) / r_schwarzschild-4),1,infinity) * dt_min;
+            return clamp(temp, dt_min, dt_max);
+        }
+        return dt;
+    }
+    
+    double t;
+    double dt;
+    double dt_min;
+    double dt_max;
+    bool use_adjusted_step_size;
+    double r_schwarzschild;
 
-// the system function can be a classical functions
-void geodesicODE(state_type& x, state_type& dxdt, double t)
-{
-	dxdt[0] = x[4];
-    dxdt[1] = x[5];
-    dxdt[2] = x[6];
-    dxdt[3] = x[7];
-    dxdt[4] = 0;
-    dxdt[5] = 0;
-    dxdt[6] = 0;
-    dxdt[7] = 0;
+};
+
+
+inline void update_ray(const ray& r_old, ray& r_new, const state_type& x) {
+
+    const point3 new_orig = r_old.orig + r_old.dir;
+    const point3 new_dir =  point3(x[0], x[1], x[2]) - new_orig;
+    r_new = ray(new_orig, new_dir);
 }
 
-inline void update_ray(state_type& x, const ray& r) {
-    x[0] = r.orig.x();
-    x[1] = r.orig.y();
-    x[2] = r.orig.z();
-    x[3] = 0;
-    x[4] = r.dir.x();
-    x[5] = r.dir.y();
-    x[6] = r.dir.z();
-    x[7] = 0;
+inline void update_x(const ray& r, state_type& x) {
+    //Update the initial conditions of the ODE to new direction normalize according to the Minkowski metric
+    point3 norm_v = (r.dir / r.dir.length())* abs(x[7]);
+
+    x[0] = r.orig[0];
+    x[1] = r.orig[1];
+    x[2] = r.orig[2];
+
+    x[4] = norm_v[0];
+    x[5] = norm_v[1];
+    x[6] = norm_v[2];
+
+
 }
 
-inline void update_ray(ray& r, const state_type& x) {
-    point3 origin(x[0], x[1], x[2]);
-    point3 direction(x[4], x[5], x[6]);
-    r = ray(origin, direction);
-}
+#define Power(x,y) pow(x,y) 
+#define Sqrt(x) sqrt(x)
+
+
 #endif

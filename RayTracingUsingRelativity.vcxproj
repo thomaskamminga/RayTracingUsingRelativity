@@ -146,10 +146,12 @@
     <ClCompile Include="RayTracingUsingRelativity.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aarect.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="hittable.h" />
     <ClInclude Include="hittable_list.h" />
+    <ClInclude Include="mass_object.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="ODE.h" />
     <ClInclude Include="ray.h" />

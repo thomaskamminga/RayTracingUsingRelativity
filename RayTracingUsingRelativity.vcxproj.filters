@@ -56,5 +56,11 @@
     <ClInclude Include="ODE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mass_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aarect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
